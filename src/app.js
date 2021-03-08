@@ -16,9 +16,7 @@ app.use(
   })
 );
 //app.use(cors());
-app.use(
-  cors({ origin: "https://spaced-repetition-client-cmgrace.vercel.app" })
-);
+app.use(cors({ origin: "https://spaced-repetition-client-jet.vercel.app" }));
 app.use(helmet());
 
 app.use("/api/auth", authRouter);
