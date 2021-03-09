@@ -1,33 +1,33 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/;
 
 const UserService = {
   hasUserWithUserName(db, username) {
-    return db('user')
+    return db("user")
       .where({ username })
       .first()
-      .then(user => !!user);
+      .then((user) => !!user);
   },
   insertUser(db, newUser) {
     return db
       .insert(newUser)
-      .into('user')
-      .returning('*')
+      .into("user")
+      .returning("*")
       .then(([user]) => user);
   },
   validatePassword(password) {
     if (password.length < 8) {
-      return 'Password be longer than 8 characters';
+      return "Password be longer than 8 characters";
     }
     if (password.length > 72) {
-      return 'Password be less than 72 characters';
+      return "Password be less than 72 characters";
     }
-    if (password.startsWith(' ') || password.endsWith(' ')) {
-      return 'Password must not start or end with empty spaces';
+    if (password.startsWith(" ") || password.endsWith(" ")) {
+      return "Password must not start or end with empty spaces";
     }
     if (!REGEX_UPPER_LOWER_NUMBER_SPECIAL.test(password)) {
-      return 'Password must contain one upper case, lower case, number and special character';
+      return "Password must contain one upper case, lower case, number and special character";
     }
     return null;
   },
@@ -42,47 +42,38 @@ const UserService = {
     };
   },
   populateUserWords(db, user_id) {
-    return db.transaction(async trx => {
+    return db.transaction(async (trx) => {
       const [languageId] = await trx
-        .into('language')
-        .insert([{ name: 'Irish', user_id }], ['id']);
+        .into("language")
+        .insert([{ name: "Spanish", user_id }], ["id"]);
 
       // when inserting words,
       // we need to know the current sequence number
       // so that we can set the `next` field of the linked language
-      const seq = await db.from('word_id_seq').select('last_value').first();
-
-      /*  (1, 1, 'beoir', 'beer', 2),
-  (2, 1, 'sliabh', 'mountain', 3),
-  (3, 1, 'loch', 'lake', 4),
-  (4, 1, 'aille', 'cliff', 5),
-  (5, 1, 'glas', 'green', 6),
-  (6, 1, 'forbróir', 'developer', 7),
-  (7, 1, 'food', 'bia', 8),
-  (8, 1, 'go raibh maith agat', 'thanks', null); */
+      const seq = await db.from("word_id_seq").select("last_value").first();
 
       const languageWords = [
-        ['beoir', 'beer', 2],
-        ['sliabh', 'mountain', 3],
-        ['loch', 'lake', 4],
-        ['aille', 'cliff', 5],
-        ['glas', 'green', 6],
-        ['forbróir', 'developer', 7],
-        ['bia', 'food', 8],
-        ['go raibh maith agat', 'thanks', null],
+        ["ventana", "window", 2],
+        ["hola", "hello", 3],
+        ["casa", "house", 4],
+        ["parque", "park", 5],
+        ["viaje", "travel", 6],
+        ["vino", "wine", 7],
+        ["perra", "dog", 8],
+        ["gata", "cat", null],
       ];
 
-      const [languageHeadId] = await trx.into('word').insert(
+      const [languageHeadId] = await trx.into("word").insert(
         languageWords.map(([original, translation, nextInc]) => ({
           language_id: languageId.id,
           original,
           translation,
           next: nextInc ? Number(seq.last_value) + nextInc : null,
         })),
-        ['id']
+        ["id"]
       );
 
-      await trx('language').where('id', languageId.id).update({
+      await trx("language").where("id", languageId.id).update({
         head: languageHeadId.id,
       });
     });

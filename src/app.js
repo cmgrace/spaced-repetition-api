@@ -15,8 +15,8 @@ app.use(
     skip: () => NODE_ENV === "test",
   })
 );
-//app.use(cors());
-app.use(cors({ origin: "https://spaced-repetition-client-jet.vercel.app" }));
+app.use(cors());
+//app.use(cors({ origin: "https://spaced-repetition-client-jet.vercel.app" }));
 app.use(helmet());
 
 app.use("/api/auth", authRouter);
