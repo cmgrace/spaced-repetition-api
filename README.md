@@ -11,6 +11,11 @@ This is a language learning application using the Spaced Repetition learning tec
 
 ## Endpoints
 
+### /api/user
+
+- POST requests
+- Used for register
+
 ### /api/auth
 
 - POST requests authorization
@@ -19,7 +24,7 @@ This is a language learning application using the Spaced Repetition learning tec
 ### /api/language
 
 - GET requests
-- this endpoint returns a list of a user's languages, and the words being studied in that language
+- This endpoint returns a list of a user's languages, and the words being studied in that language
 
 ### /api/language/head
 
